@@ -85,6 +85,7 @@ docs/
   11-backup-updates.md         Backup strategy, update policy, version register
   12-final-report.md           Deliverables A–J template + executive recommendation
   13-ui-blueprint.md           Mapping the "Local AI Assistant" UI mockups to the stack
+  14-ui-generation-prompt.md   Ready-to-paste prompt for AI UI tools to generate the frontend
 scripts/
   00-audit.ps1                 Full system audit → readiness report (read-only)
   01-memory-check.ps1          Memory consumers + safe optimization recommendations
