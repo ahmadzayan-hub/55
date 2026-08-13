@@ -28,13 +28,12 @@ same assistant names, same knowledge-base names, same RAG behavior. You get
 ~85% of the mockup experience with zero custom code, which the master prompt's
 "do not over-engineer" rule requires.
 
-**Custom frontend (optional, post-Gate 10):** if the exact mockup UI matters,
-the right architecture is a local web app (e.g., Next.js/React, dark/purple
-design tokens from the mockups) speaking to **Open WebUI's REST API** (chat,
-RAG, knowledge) rather than reimplementing RAG — keeping one backend of truth,
-adding the Home dashboard, Analytics page, and Document Viewer the mockups show.
-Localhost-only binding and the same security posture (docs/08) would apply.
-Treat it as a separate project gate-kept by a working, validated base platform.
+**Custom frontend (built — see `frontend/`):** the mockup UI implemented as a
+dependency-free SPA + Python stdlib loopback proxy speaking to **Open WebUI's
+REST API** (chat with RAG collections, knowledge, models) and Ollama — one
+backend of truth, no Node toolchain. Launch with `scripts\start-frontend.ps1`
+after the stack is up; setup and security posture in `frontend/README.md`.
+Uploads and knowledge administration deliberately remain in Open WebUI.
 
 Design tokens observed in the mockups (for the dashboard + any future frontend):
 background `#0b0d14`, surface `#141726`, border `#23263a`, text `#e6e8f0`,

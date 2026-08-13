@@ -94,8 +94,11 @@ scripts/
   04-install-openwebui.ps1     Native Open WebUI install, localhost-bound
   05-privacy-check.ps1         Port bindings, firewall, exposure verification
   start-ai.ps1 / stop-ai.ps1   Daily startup / clean shutdown
+  start-frontend.ps1           Launch the custom frontend UI (see frontend/)
   status.ps1                   One-screen dashboard (-Html renders reports\dashboard.html)
   backup.ps1                   Backup Open WebUI data, config, version register
+frontend/
+  index.html + server.py       Custom "Local AI Assistant" UI (mockup design, live data)
 benchmarks/
   prompts.json                 Bilingual (AR/EN/mixed) benchmark prompt set
 reports/                       Audit + benchmark output lands here (gitignored)
