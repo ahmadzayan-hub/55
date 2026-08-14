@@ -1,0 +1,10 @@
+# Generated output from audit/benchmark/status runs (may contain machine details)
+reports/
+
+# Never commit private data
+*.zip
+webui.db
+uploads/
+vector_db/
+__pycache__/
+*.pyc
