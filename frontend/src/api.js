@@ -96,6 +96,24 @@ export async function streamChat({ model, kbId, history }, onDelta) {
   return full;
 }
 
+/**
+ * Run the tool-using agent (frontend/agent.py) against the local stack.
+ * Non-streaming: resolves with { steps: [...], answer, truncated? }.
+ * kbIds scopes which knowledge bases the agent's search_knowledge_base and
+ * read_document tools may see — the model itself cannot choose others.
+ * allowWeb must be explicitly passed true per call; it is never implied.
+ */
+export async function runAgent({ model, kbIds, allowWeb, history }) {
+  const r = await fetch("/agent/run", {
+    method: "POST",
+    headers: Object.assign({ "Content-Type": "application/json" }, authHeaders()),
+    body: JSON.stringify({ model, kbIds: kbIds || [], allowWeb: !!allowWeb, messages: history }),
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || "HTTP " + r.status);
+  return data;
+}
+
 export function fmtSize(b) {
   if (b == null) return "—";
   if (b > 1e9) return (b / 1e9).toFixed(1) + " GB";
