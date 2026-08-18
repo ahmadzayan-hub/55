@@ -1,17 +1,57 @@
-# Local AI Assistant — Custom Frontend
+# Local AI Assistant — Custom Frontend (React)
 
-The mockup UI, live: a single-page app in the project's design language (dark
-`#0B0D14` ground, violet accent) wired to the real local stack. No Node, no
-build step, no dependencies beyond Python — deliberately light for the 16 GB
-machine.
+The mockup UI, live: a React single-page app in the project's design language
+(dark `#0B0D14` ground, violet accent), pre-compiled to plain JS/CSS and wired
+to the real local stack. **No Node.js is required on the Windows laptop** —
+only to rebuild the bundle after an edit. Running it needs Python only.
 
 ```
 Browser ── http://127.0.0.1:8090
              │  frontend/server.py  (Python stdlib, loopback-only)
-             ├── static SPA (index.html)
+             ├── static files: index.html, dist/bundle.js, dist/bundle.css
              ├── /owui/*    → Open WebUI  127.0.0.1:8080   (models, knowledge, RAG chat)
              ├── /ollama/*  → Ollama      127.0.0.1:11434  (version, loaded models)
              └── /sys/stats → live RAM/CPU via PowerShell CIM
+```
+
+## Source layout
+
+```
+frontend/
+  src/
+    main.jsx                 entry point (createRoot)
+    App.jsx                  top-level state: active view, API key, loaded data
+    api.js                   fetch helpers — talks only to the loopback proxy
+    useStatus.js              polls Ollama / Open WebUI / RAM+CPU every 7s
+    styles.css                design tokens + component styles
+    components/
+      Sidebar.jsx             nav + live system-status card
+      Home.jsx                stat cards, top knowledge bases, quick actions
+      Chat.jsx                streaming chat, model + knowledge-base selectors
+      KnowledgeBases.jsx      collections + per-collection file table
+      Assistants.jsx          models/assistants published by Open WebUI
+      Settings.jsx            API-key setup + live system info
+  build/
+    build.mjs                 esbuild config — bundles + minifies src/ → dist/
+  dist/                       COMPILED OUTPUT — committed; this is what ships
+    bundle.js, bundle.css
+  index.html                  thin shell: <div id="root"> + <script src="/dist/bundle.js">
+  server.py                   loopback proxy + static file server (unchanged)
+  package.json                react, react-dom, esbuild (devDependency)
+```
+
+`dist/` is deliberately committed to the repo — the Windows laptop only runs
+`server.py` and never needs Node. `node_modules/` is gitignored.
+
+## Rebuilding after an edit
+
+Requires Node.js (only on whichever machine you edit `src/` on — not required
+to *run* the app):
+
+```powershell
+cd frontend
+npm install     # first time only
+npm run build   # writes dist/bundle.js + dist/bundle.css
 ```
 
 ## Features (live data, not samples)
@@ -45,6 +85,7 @@ stored only in this browser's localStorage on this machine.
 ## Security posture
 
 - `server.py` binds **127.0.0.1 only**; the proxy targets are loopback too.
-- No external origins, no CDNs, no telemetry; the page is fully self-contained.
+- No external origins, no CDNs, no telemetry; React itself is bundled into
+  `dist/bundle.js` at build time — nothing is fetched from a CDN at runtime.
 - The API key never leaves the machine (browser → loopback proxy → Open WebUI).
 - Same rules as the rest of the kit (docs/08): no port forwarding, no tunnels.

@@ -44,7 +44,14 @@ Do not proceed past a gate until it passes.
 ## Quick start (on the Windows laptop)
 
 ```powershell
-# 1. Clone this repo, then from its root:
+# 0. Clone the repo and MOVE INTO ITS FOLDER — every command below assumes
+#    your PowerShell prompt is inside the repo root, not your home folder.
+cd $env:USERPROFILE
+git clone https://github.com/ahmadzayan-hub/55.git
+cd 55                                          # <- easy to miss; see docs/10 if a
+                                                #    script says "not recognized"
+
+# 1. Allow running the kit's scripts for this PowerShell session:
 Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 
 # 2. Gate 1 — audit (installs nothing, changes nothing)
@@ -98,7 +105,7 @@ scripts/
   status.ps1                   One-screen dashboard (-Html renders reports\dashboard.html)
   backup.ps1                   Backup Open WebUI data, config, version register
 frontend/
-  index.html + server.py       Custom "Local AI Assistant" UI (mockup design, live data)
+  src/ + dist/ + server.py     React "Local AI Assistant" UI (mockup design, live data)
 benchmarks/
   prompts.json                 Bilingual (AR/EN/mixed) benchmark prompt set
 reports/                       Audit + benchmark output lands here (gitignored)

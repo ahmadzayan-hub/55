@@ -2,6 +2,22 @@
 
 Format per issue: **Symptom → Likely cause → Diagnostic → Corrective action.**
 
+## "The term '.\scripts\...\.ps1' is not recognized"
+- **Cause:** the most common Gate-1 stumble — PowerShell is running from
+  `C:\Users\<you>`, not from inside the cloned repo, so the relative path
+  `.\scripts\...` points nowhere.
+- **Diagnose:** run `Get-Location` — if it prints your home folder instead of
+  the repo folder (e.g. `...\55`), that's the cause. `dir` should show
+  `docs`, `scripts`, `frontend` if you're in the right place.
+- **Fix:** `cd` into the cloned repo first, every session:
+  ```powershell
+  cd $env:USERPROFILE\55        # or wherever you cloned it
+  .\scripts\00-audit.ps1
+  ```
+  If the folder isn't there yet, clone it (`git clone
+  https://github.com/ahmadzayan-hub/55.git`) and `cd 55` before running
+  anything — see the Quick Start in the repo README.
+
 ## Ollama not starting
 - **Cause:** service/tray not running; port 11434 taken; corrupted install.
 - **Diagnose:** `ollama list` (connection error?); `Get-NetTCPConnection -LocalPort 11434`; `%LOCALAPPDATA%\Ollama\server.log`.
