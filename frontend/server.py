@@ -5,6 +5,7 @@ Serves the SPA in this directory at http://127.0.0.1:8090 and proxies:
   /owui/*    -> Open WebUI  (http://127.0.0.1:8080)
   /ollama/*  -> Ollama      (http://127.0.0.1:11434)
   /sys/stats -> live RAM/CPU snapshot (via PowerShell CIM on Windows)
+  /agent/run -> tool-using agent loop (agent.py), driving Ollama directly
 
 The proxy exists so the browser talks to one origin (no CORS exposure) and
 so system stats are available to the page. Nothing binds beyond loopback.
@@ -19,6 +20,8 @@ import time
 import urllib.error
 import urllib.request
 from functools import partial
+
+import agent
 
 OWUI = os.environ.get("OWUI_URL", "http://127.0.0.1:8080")
 OLLAMA = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434")
@@ -90,21 +93,57 @@ class Handler(http.server.SimpleHTTPRequestHandler):
         except (BrokenPipeError, ConnectionAbortedError, ConnectionResetError):
             pass
 
+    def _agent_run(self):
+        length = int(self.headers.get("Content-Length") or 0)
+        try:
+            payload = json.loads(self.rfile.read(length) or b"{}")
+        except Exception:
+            return self._json(400, {"error": "invalid JSON body"})
+
+        model = payload.get("model")
+        if not model:
+            return self._json(400, {"error": "model is required"})
+
+        auth_headers = {}
+        if self.headers.get("Authorization"):
+            auth_headers["Authorization"] = self.headers["Authorization"]
+
+        try:
+            result = agent.run_agent(
+                model=model,
+                history=payload.get("messages") or [],
+                kb_ids=payload.get("kbIds") or [],
+                allow_web=bool(payload.get("allowWeb")),
+                owui_base=OWUI,
+                ollama_base=OLLAMA,
+                auth_headers=auth_headers,
+            )
+        except Exception as e:
+            return self._json(500, {"error": str(e)})
+        self._json(200, result)
+
     def _route(self):
+        """Handle a proxied/local route. Returns True if a response was sent."""
         if self.path.startswith("/owui/"):
-            return self._proxy(OWUI, "/owui")
+            self._proxy(OWUI, "/owui")
+            return True
         if self.path.startswith("/ollama/"):
-            return self._proxy(OLLAMA, "/ollama")
+            self._proxy(OLLAMA, "/ollama")
+            return True
         if self.path == "/sys/stats":
-            return self._json(200, sys_stats())
-        return None
+            self._json(200, sys_stats())
+            return True
+        if self.path == "/agent/run" and self.command == "POST":
+            self._agent_run()
+            return True
+        return False
 
     def do_GET(self):
-        if self._route() is None and not self.path.startswith(("/owui/", "/ollama/")):
+        if not self._route():
             super().do_GET()
 
     def do_POST(self):
-        if self._route() is None:
+        if not self._route():
             self.send_error(404)
 
     do_PUT = do_DELETE = do_PATCH = do_POST

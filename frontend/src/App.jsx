@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import Sidebar from "./components/Sidebar.jsx";
 import Home from "./components/Home.jsx";
 import Chat from "./components/Chat.jsx";
+import Agent from "./components/Agent.jsx";
 import KnowledgeBases from "./components/KnowledgeBases.jsx";
 import Assistants from "./components/Assistants.jsx";
 import Settings from "./components/Settings.jsx";
@@ -65,6 +66,9 @@ export default function App() {
         )}
         {view === "chat" && (
           <Chat models={models} kbs={kbs} hasKey={!!getKey()} onNeedKey={() => setView("set")} resetSignal={chatResetSignal} />
+        )}
+        {view === "agent" && (
+          <Agent models={models} kbs={kbs} hasKey={!!getKey()} onNeedKey={() => setView("set")} />
         )}
         {view === "kb" && <KnowledgeBases kbs={kbs} />}
         {view === "as" && <Assistants models={models} />}

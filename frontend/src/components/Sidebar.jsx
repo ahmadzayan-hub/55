@@ -3,6 +3,7 @@ import React from "react";
 const NAV = [
   { id: "home", label: "Home", icon: "🏠" },
   { id: "chat", label: "Chat", icon: "💬" },
+  { id: "agent", label: "Agent", icon: "🛠️" },
   { id: "kb", label: "Knowledge Bases", icon: "📚" },
   { id: "as", label: "Assistants", icon: "🤖" },
   { id: "set", label: "Settings", icon: "⚙️" },

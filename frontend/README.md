@@ -11,6 +11,7 @@ Browser ── http://127.0.0.1:8090
              ├── static files: index.html, dist/bundle.js, dist/bundle.css
              ├── /owui/*    → Open WebUI  127.0.0.1:8080   (models, knowledge, RAG chat)
              ├── /ollama/*  → Ollama      127.0.0.1:11434  (version, loaded models)
+             ├── /agent/run → agent.py — tool-using agent loop (see docs/15)
              └── /sys/stats → live RAM/CPU via PowerShell CIM
 ```
 
@@ -28,6 +29,7 @@ frontend/
       Sidebar.jsx             nav + live system-status card
       Home.jsx                stat cards, top knowledge bases, quick actions
       Chat.jsx                streaming chat, model + knowledge-base selectors
+      Agent.jsx               tool-using agent + step-by-step trace (docs/15)
       KnowledgeBases.jsx      collections + per-collection file table
       Assistants.jsx          models/assistants published by Open WebUI
       Settings.jsx            API-key setup + live system info
@@ -36,7 +38,8 @@ frontend/
   dist/                       COMPILED OUTPUT — committed; this is what ships
     bundle.js, bundle.css
   index.html                  thin shell: <div id="root"> + <script src="/dist/bundle.js">
-  server.py                   loopback proxy + static file server (unchanged)
+  server.py                   loopback proxy + static file server + /agent/run route
+  agent.py                    tool-using agent loop (stdlib only) — see docs/15
   package.json                react, react-dom, esbuild (devDependency)
 ```
 
@@ -63,6 +66,10 @@ npm run build   # writes dist/bundle.js + dist/bundle.css
   "collection"}]`); Arabic/English with correct RTL (`dir="auto"` bubbles).
 - **Knowledge Bases** — collections with document counts and per-collection
   file lists (name, date, size).
+- **Agent** — a tool-using agent (search a knowledge base, read one named
+  document, check the date, do math, and — opt-in only — search the web)
+  that shows every tool call it makes before its final answer. Full design
+  and security notes in `docs/15-agent-orchestration.md`.
 - **Assistants** — every model/custom assistant published by Open WebUI.
 - **Settings** — API key setup + connection test, live system info.
 - **Sidebar status card** — Ollama/Open WebUI up-down dots, active model,
@@ -88,4 +95,6 @@ stored only in this browser's localStorage on this machine.
 - No external origins, no CDNs, no telemetry; React itself is bundled into
   `dist/bundle.js` at build time — nothing is fetched from a CDN at runtime.
 - The API key never leaves the machine (browser → loopback proxy → Open WebUI).
+- The Agent's `web_search` tool is the one deliberate exception — off by
+  default, opt-in per session, clearly badged in the trace. See docs/15.
 - Same rules as the rest of the kit (docs/08): no port forwarding, no tunnels.
