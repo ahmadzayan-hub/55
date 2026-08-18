@@ -29,11 +29,14 @@ same assistant names, same knowledge-base names, same RAG behavior. You get
 "do not over-engineer" rule requires.
 
 **Custom frontend (built — see `frontend/`):** the mockup UI implemented as a
-dependency-free SPA + Python stdlib loopback proxy speaking to **Open WebUI's
-REST API** (chat with RAG collections, knowledge, models) and Ollama — one
-backend of truth, no Node toolchain. Launch with `scripts\start-frontend.ps1`
-after the stack is up; setup and security posture in `frontend/README.md`.
-Uploads and knowledge administration deliberately remain in Open WebUI.
+React SPA, pre-compiled to a static bundle and served by a Python stdlib
+loopback proxy speaking to **Open WebUI's REST API** (chat with RAG
+collections, knowledge, models) and Ollama — one backend of truth. The
+compiled `dist/bundle.js` ships in the repo, so the Windows laptop needs no
+Node.js to *run* it (only to rebuild after editing `frontend/src/`). Launch
+with `scripts\start-frontend.ps1` after the stack is up; architecture, build
+step, and security posture in `frontend/README.md`. Uploads and knowledge
+administration deliberately remain in Open WebUI.
 
 Design tokens observed in the mockups (for the dashboard + any future frontend):
 background `#0b0d14`, surface `#141726`, border `#23263a`, text `#e6e8f0`,
