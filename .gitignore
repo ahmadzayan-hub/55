@@ -13,3 +13,8 @@ __pycache__/
 # it's what ships to the Windows laptop; only the Node toolchain is excluded.
 frontend/node_modules/
 frontend/build/node_modules/
+
+# demo-dist/ (build/build-demo.mjs's output, for public/Vercel hosting) is
+# NOT committed — unlike dist/, its only consumer (Vercel) builds it fresh
+# from source every deploy, so a committed copy would just be dead weight.
+frontend/demo-dist/

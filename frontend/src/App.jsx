@@ -9,6 +9,11 @@ import Settings from "./components/Settings.jsx";
 import { useStatus } from "./useStatus.js";
 import { getKey, owuiModels, owuiKnowledge } from "./api.js";
 
+// Set to "true" only by build/build-demo.mjs (the public, sample-data
+// deployment). The real build (build/build.mjs) always defines this false —
+// see the comment there for why it must be defined in both.
+const DEMO = process.env.DEMO === "true";
+
 export default function App() {
   const [view, setView] = useState("home");
   const [chatResetSignal, setChatResetSignal] = useState(0);
@@ -34,6 +39,14 @@ export default function App() {
   }, [loadData]);
 
   function openWebUI() {
+    if (DEMO) {
+      alert(
+        "This is a sample-data demo, not connected to a real AI stack. " +
+          "The real app runs entirely on your own machine and opens your local " +
+          "Open WebUI here — see the project README to set it up."
+      );
+      return;
+    }
     window.open("http://localhost:8080", "_blank");
   }
   function newChat() {
@@ -42,8 +55,19 @@ export default function App() {
   }
 
   return (
-    <div className="app">
-      <Sidebar view={view} onNavigate={setView} onNewChat={newChat} status={status} />
+    <>
+      {DEMO && (
+        <div className="demo-banner">
+          <b>Demo — sample data only.</b> Not connected to a real AI stack. The
+          real app runs 100% on your own machine —{" "}
+          <a href="https://github.com/ahmadzayan-hub/55" target="_blank" rel="noreferrer">
+            see the README
+          </a>{" "}
+          to set it up.
+        </div>
+      )}
+      <div className="app">
+        <Sidebar view={view} onNavigate={setView} onNewChat={newChat} status={status} />
       <main className="main">
         {needKeyNotice && (
           <div className="notice">
@@ -74,6 +98,7 @@ export default function App() {
         {view === "as" && <Assistants models={models} />}
         {view === "set" && <Settings status={status} onSaveKey={loadData} />}
       </main>
-    </div>
+      </div>
+    </>
   );
 }

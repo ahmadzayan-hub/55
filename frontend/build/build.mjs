@@ -22,6 +22,13 @@ await build({
   outfile: join(distDir, "bundle.js"),
   jsx: "automatic",
   loader: { ".css": "css" },
+  // Must be defined here too (as false) — App.jsx checks process.env.DEMO to
+  // show the sample-data banner on the public demo build (build-demo.mjs,
+  // which defines it true). esbuild's define is a pure text substitution, so
+  // leaving it unset here would ship a bare `process.env.DEMO` reference into
+  // this real build's bundle — a ReferenceError in the browser, since there
+  // is no `process` global on the client.
+  define: { "process.env.DEMO": '"false"' },
   logLevel: "info",
 });
 

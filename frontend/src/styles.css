@@ -39,6 +39,17 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
 }
 .app { display: flex; min-height: 100vh; }
 
+.demo-banner {
+  background: linear-gradient(90deg, rgba(251, 191, 36, .16), rgba(251, 191, 36, .07));
+  border-bottom: 1px solid var(--warn);
+  color: var(--text);
+  font-size: 12.5px;
+  text-align: center;
+  padding: 8px 16px;
+}
+.demo-banner b { color: var(--warn); }
+.demo-banner a { color: var(--accent2); text-decoration: underline; }
+
 /* ---------- Sidebar ---------- */
 .side {
   width: 218px; flex: 0 0 218px; background: var(--side); border-right: 1px solid var(--border);
