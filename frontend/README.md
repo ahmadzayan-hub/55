@@ -35,6 +35,8 @@ frontend/
       Settings.jsx            API-key setup + live system info
   build/
     build.mjs                 esbuild config — bundles + minifies src/ → dist/
+    build-demo.mjs             builds a SAMPLE-DATA bundle for public hosting (see below)
+    mock-api.js                demo-only data layer (swapped in for src/api.js)
   dist/                       COMPILED OUTPUT — committed; this is what ships
     bundle.js, bundle.css
   index.html                  thin shell: <div id="root"> + <script src="/dist/bundle.js">
@@ -88,6 +90,30 @@ WebUI (one backend of truth) — the "Open WebUI" quick action jumps there.
 First use: in Open WebUI go to **Settings → Account → API keys**, create a
 key, paste it into the frontend's **Settings** view, Save & test. The key is
 stored only in this browser's localStorage on this machine.
+
+## Public demo build (sample data — never the real app)
+
+The real app cannot be meaningfully hosted on Vercel/any public host: its API
+calls (`/owui`, `/ollama`, `/agent/run`, `/sys/stats`) only resolve on
+`127.0.0.1` of whichever machine runs `server.py` — that's the privacy
+guarantee working as designed, not a gap to route around.
+
+For a shareable preview instead, `build/build-demo.mjs` builds the *same*
+components against `build/mock-api.js` (canned data, no network calls) into
+`demo-dist/` — a plain static site with an unmissable amber "Demo — sample
+data only" banner. Unlike `dist/`, `demo-dist/` is gitignored, not committed
+— its only consumer is a static host that builds it fresh from source on
+every deploy, so a checked-in copy would just be dead weight.
+
+```powershell
+cd frontend
+node build/build-demo.mjs        # writes demo-dist/{index.html,bundle.js,bundle.css}
+```
+
+To deploy it (e.g. to Vercel): point the host at this repo's `frontend/`
+directory with `installCommand: npm install`, `buildCommand: node
+build/build-demo.mjs`, `outputDirectory: demo-dist`, framework auto-detection
+off. No environment variables or secrets needed — it's fully static.
 
 ## Security posture
 
